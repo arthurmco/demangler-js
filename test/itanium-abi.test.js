@@ -9,7 +9,7 @@ const itanium_abi = require('./../src/itanium-abi');
 describe('Free Functions', () => {
 
     it('Receives nothing, return void', (done) => {
-	assert.equal(itanium_abi.demangle("_Z7doThingv"), "doThing()");
+	assert.equal(itanium_abi.demangle("_Z7doThingv"), "doThing(void)");
 	done();
     });
 
@@ -35,12 +35,12 @@ describe('Free Functions', () => {
     });
 
     it('receives size_t', (done) => {
-	assert.equal(itanium_abi.demangle("_Z10test_sizetm"), "test_sizet(size_t)");
+	assert.equal(itanium_abi.demangle("_Z10test_sizetm"), "test_sizet(unsigned long int)");
 	done();
     });
 
     it('receives signed size_t', (done) => {
-	assert.equal(itanium_abi.demangle("_Z11test_ssizetl"), "test_ssizet(ssize_t)");
+	assert.equal(itanium_abi.demangle("_Z11test_ssizetl"), "test_ssizet(long int)");
 	done();
     });
 
