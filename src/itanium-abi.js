@@ -104,7 +104,7 @@ module.exports = {
 
 	       The others are self descriptive
 	    */
-	    let typeInfo = {isBase: true, typeStr: "", isConst: false, isPtr: false,
+	    let typeInfo = {isBase: true, typeStr: "", isConst: false, numPtr: 0,
 			    isRValueRef: false, isRef: false, isRestrict: false,
 			    templateStart: false, templateEnd: false,
 			    isVolatile: false, templateType: null};
@@ -119,7 +119,7 @@ module.exports = {
 		case 'r': typeInfo.isRestrict = true; process = popChar(process.str); break;
 		case 'V': typeInfo.isVolatile = true; process = popChar(process.str); break;
 		case 'K': typeInfo.isConst = true; process = popChar(process.str); break;
-		case 'P': typeInfo.isPtr = true; process = popChar(process.str); break;
+		case 'P': typeInfo.numPtr++; process = popChar(process.str); break;
 		default: doQualifier = false;
 		}
 	    }
@@ -228,13 +228,13 @@ module.exports = {
 	    if (!t.templateStart) {
 		if (t.isRef) typestr = typestr.concat("&");
 		if (t.isRValueRef) typestr = typestr.concat("&&");
-		if (t.isPtr) typestr = typestr.concat("*");
+		for (let i = 0; i < t.numPtr; i++) typestr = typestr.concat("*");
 	    }
 	    
 	    if (t.templateType) {		
 		if (t.templateType.isRef) typestr = typestr.concat("&");
 		if (t.templateType.isRValueRef) typestr = typestr.concat("&&");
-		if (t.templateType.isPtr) typestr = typestr.concat("*");
+		for (let i = 0; i < t.templateType.numPtr; i++) typestr = typestr.concat("*");
 	    }
 	    
 	    return typestr;

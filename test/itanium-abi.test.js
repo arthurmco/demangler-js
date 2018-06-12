@@ -98,7 +98,12 @@ describe('Free Functions', () => {
 	assert.equal(itanium_abi.demangle("_Z13testConstCharPKc"), "testConstChar(const char*)");
 	done();
     });
-
+    
+    it('receives double char ptr', (done) => {
+	assert.equal(itanium_abi.demangle("_Z11testCharPtrPPc"), "testCharPtr(char**)");
+	done();
+    });
+    
     it('receives char ptr', (done) => {
 	assert.equal(itanium_abi.demangle("_Z11testCharPtrPc"), "testCharPtr(char*)");
 	done();
