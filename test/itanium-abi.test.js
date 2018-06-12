@@ -105,7 +105,7 @@ describe('Free Functions', () => {
 
 describe('classes', () => {
     it('public function, receives nothing', (done) => {
-	assert.equal(itanium_abi.demangle("_ZN10test_class4testEv"), "test_class::test()");
+	assert.equal(itanium_abi.demangle("_ZN10test_class4testEv"), "test_class::test(void)");
 	done();
     });
 
@@ -116,7 +116,7 @@ describe('classes', () => {
 
     it('private function, receives nothing', (done) => {
 	assert.equal(itanium_abi.demangle("_ZN10test_class12test_privateEv"),
-		     "test_class::test_private()");
+		     "test_class::test_private(void)");
 	done();
     });
     

@@ -9,12 +9,45 @@
    Returns an object. The 'name' property is the name, the 'str' is the remainder of the string */
 function popName(str) {
     /* The name is in the format <length><str> */
-    const res = /(\d*)/.exec(str);
-    
-    const len = parseInt(res[0], 10);
-    const strstart = str.substr(res[0].length);
 
-    return {name: strstart.substr(0, len), str: strstart.substr(len)};
+    let isLast = false;
+    let namestr = "";
+    let rlen = 0;
+    const ostr = str;
+    let isEntity = false;
+
+    while (!isLast) {
+	
+	/* This is used for decoding names inside complex namespaces
+	   Whenever we find an 'N' preceding a number, it's a prefix/namespace
+	*/
+	isLast = str[0] != "N";
+
+	/* This is used for us to know we'll find an E in the end of this name
+	   The E marks the final of our name
+	*/
+	isEntity = isEntity || !isLast;
+	
+	if (!isLast)
+	    str = str.substr(1);
+	
+	const res = /(\d*)/.exec(str);
+	
+	const len = parseInt(res[0], 10);
+
+	rlen += res[0].length + len;
+	
+	const strstart = str.substr(res[0].length);
+	namestr = namestr.concat(strstart.substr(0, len));
+
+	if (!isLast) namestr = namestr.concat("::");
+	str = strstart.substr(len);
+    }
+
+    if (isEntity)
+	rlen += 2; // Take out the "E", the entity end mark
+
+    return {name: namestr, str: ostr.substr(rlen)};
 }
 
 function popChar(str) {
