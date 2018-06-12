@@ -1,13 +1,13 @@
 {
   "name": "demangler-js",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "C++ name demangler written in javascript",
   "repository": "https://github.com/arthurmco/demangler-js",
   "main": "src/index.js",
   "scripts": {
-      "test": "node ./node_modules/mocha/bin/mocha test/",
-      "cover": "node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha",
-      "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "node ./node_modules/mocha/bin/mocha test/",
+    "cover": "node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "keywords": [
     "demangler",
