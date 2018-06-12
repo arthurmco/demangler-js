@@ -7,7 +7,12 @@ const itanium_abi = require('./../src/itanium-abi');
 
 describe('Free Functions', () => {
 
-    it('Receives nothing, return void', (done) => {
+    it('receives an unmangled name', (done) => {
+	assert.equal(itanium_abi.demangle("main(int, char**)"), "main(int, char**)");
+	done();
+    });
+    
+    it('receives nothing, return void', (done) => {
 	assert.equal(itanium_abi.demangle("_Z7doThingv"), "doThing(void)");
 	done();
     });
