@@ -1,6 +1,6 @@
 # demangler-js
 
-A C++ demangler written in pure Javascript code
+A C++ name demangler written in pure Javascript code
 
 For now, it only demangles C++ functions generated from GCC and
 Clang. MSVC will be supported soon, though.
@@ -12,7 +12,7 @@ even need to be C++!
 
 ```js
 
-const demangler = require('demangler');
+const demangler = require('demangler-js');
 
 const fname = demangler.demangle("_Z23this_function_is_a_testi") 
 console.log(fname);
