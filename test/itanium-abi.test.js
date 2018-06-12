@@ -17,8 +17,33 @@ describe('Free Functions', () => {
 	done();
     });
 
+    it('receives unsigned short', (done) => {
+	assert.equal(itanium_abi.demangle("_Z7isShortt"), "isShort(unsigned short)");
+	done();
+    });
+
     it('receives short', (done) => {
 	assert.equal(itanium_abi.demangle("_Z7isShorts"), "isShort(short)");
+	done();
+    });
+    
+    it('receives unsigned char', (done) => {
+	assert.equal(itanium_abi.demangle("_Z6isCharh"), "isChar(unsigned char)");
+	done();
+    });
+
+    it('receives signed char', (done) => {
+	assert.equal(itanium_abi.demangle("_Z6isChara"), "isChar(signed char)");
+	done();
+    });
+
+    it('receives wide char', (done) => {
+	assert.equal(itanium_abi.demangle("_Z6isCharw"), "isChar(wchar_t)");
+	done();
+    });
+
+    it('receives wide char pointer', (done) => {
+	assert.equal(itanium_abi.demangle("_Z6isCharPw"), "isChar(wchar_t*)");
 	done();
     });
 
