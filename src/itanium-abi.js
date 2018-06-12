@@ -9,10 +9,13 @@ module.exports = {
 
     /* Check if the name passed is a IA64 ABI mangled name */
     isMangled: function(name) {
-	
+	return name.startsWith("_Z");
     },
 
     demangle: function(name) {
+	
+
+
 	
     }
     
