@@ -3,6 +3,8 @@
 
    This is a pretensious and cocky way to say that this file demangles function names
    mangled by GCC and Clang.
+
+   Material used: https://itanium-cxx-abi.github.io/cxx-abi/abi.html#mangling
 **/
 
 /* Removes a mangled name from 'str', in the mangled name format
@@ -23,13 +25,15 @@ function popName(str) {
 	*/
 	isLast = str[0] != "N";
 
-	/* St means std:: in the mangled string */
+	/* St means std:: in the mangled string 
+	   This std:: check is for inside the name, not outside, 
+	   unlike the one in the demangle function
+	 */
 	if (str.substr(1, 2) === "St") {
 	    namestr = namestr.concat("std::");
 	    str = str.replace("St", "");
+	    rlen++;
 	}
-
-
 
 	/* This is used for us to know we'll find an E in the end of this name
 	   The E marks the final of our name
@@ -42,9 +46,11 @@ function popName(str) {
 	const res = /(\d*)/.exec(str);
 
 	const len = parseInt(res[0], 10);
+	console.log(len);
 
 	rlen += res[0].length + len;
-
+	console.log(res[0].length);
+	
 	const strstart = str.substr(res[0].length);
 	namestr = namestr.concat(strstart.substr(0, len));
 
@@ -55,6 +61,7 @@ function popName(str) {
     if (isEntity)
 	rlen += 2; // Take out the "E", the entity end mark
 
+    console.log(ostr.substr(rlen));
     return {name: namestr, str: ostr.substr(rlen)};
 }
 
@@ -85,7 +92,7 @@ module.exports = {
 
 	// Process the types
 	let str = fname.str;
-
+	
 	while (str.length > 0) {
 	    let process = popChar(str);
 
@@ -98,7 +105,8 @@ module.exports = {
 	    */
 	    let typeInfo = {isBase: true, typeStr: "", isConst: false, isPtr: false,
 			    isRValueRef: false, isRef: false, isRestrict: false,
-			    isVolatile: false};
+			    templateStart: false, templateEnd: false,
+			    isVolatile: false, templateTypes: []};
 
 	    /* Check if we have a qualifier (like const, ptr, ref... )*/
 	    var doQualifier = true;
@@ -126,6 +134,42 @@ module.exports = {
 	    case 's': typeInfo.typeStr = "short"; break;
 	    case 't': typeInfo.typeStr = "unsigned short"; break;
 	    case 'i': typeInfo.typeStr = "int"; break;
+	    case 'S':
+		/* Abbreviated std:: types */
+		process = popChar(process.str);
+
+		switch (process.ch) {
+		case 't': {
+		    // It's a custom type name
+		    const tname = popName(process.str);
+		    typeInfo.typeStr = "std::".concat(tname.name);
+		    process.str = tname.str;
+		    break;
+		}
+		case 'a': typeInfo.typeStr = "std::allocator"; break;
+		case 'b': typeInfo.typeStr = "std::basic_string"; break;
+		case 's': typeInfo.typeStr = "std::basic_string<char, std::char_traits<char>, std::allocator<char>>"; break;
+		case 'i': typeInfo.typeStr = "std::basic_istream<char, std::char_traits<char>>"; break;
+		case 'o': typeInfo.typeStr = "std::basic_ostream<char, std::char_traits<char>>"; break;
+		case 'd': typeInfo.typeStr = "std::basic_iostream<char, std::char_traits<char>>"; break;
+		default:
+		    process.str = process.ch.concat(process.str);
+		    break;
+		}
+		
+		break;
+		
+	    case 'I':
+		// Template open bracket (<)
+		typeInfo.typeStr = "<";
+		typeInfo.templateStart = true;
+		break;
+	    case 'E':
+		// Template closing bracket (>)
+		typeInfo.typeStr = ">";
+		typeInfo.templateEnd = true;
+		break;
+				
 	    case 'j': typeInfo.typeStr = "unsigned int"; break;
 	    case 'l': typeInfo.typeStr = "long int"; break;
 	    case 'm': typeInfo.typeStr = "unsigned long int"; break;
@@ -138,12 +182,14 @@ module.exports = {
 	    case 'e': typeInfo.typeStr = "long double"; break;
 	    case 'g': typeInfo.typeStr = "__float128"; break;
 	    case 'z': typeInfo.typeStr = "..."; break;
+
+		/* No type code. We have a type name instead */
 	    default: {
 		if (!isNaN(parseInt(process.ch, 10)) || process.ch == "N") {
 
 		    // It's a custom type name
 		    const tname = popName(process.ch.concat(process.str));
-		    typeInfo.typeStr = tname.name;
+		    typeInfo.typeStr = typeInfo.typeStr.concat(tname.name);
 		    process.str = tname.str;
 		}
 
@@ -171,7 +217,15 @@ module.exports = {
 	    return typestr;
 	});
 
-	return functionname.concat("(" + typelist.join(', ') + ")");
+	/* Those replaces are an stupid shortcut to fix templates and make it fast
+	   Without that, we would need to complicate the code
+
+	   What it does is remove the commas where we would have the angle brackets
+	   for the templates
+	*/
+	
+	return functionname.concat("(" + typelist.join(', ') + ")").replace(/<, /g, "<")
+	    .replace(/, >/g, ">").replace(/, </g, "<");
     }
 
 };

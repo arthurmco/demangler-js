@@ -1,6 +1,5 @@
 /* Test the itanium abi compatibility */
 
-
 const assert = require('assert');
 const itanium_abi = require('./../src/itanium-abi');
 
@@ -171,20 +170,20 @@ describe('std types', () => {
     it('receives std::string', (done) => {
 	assert.equal(itanium_abi.demangle(
 	    "_Z10testStringNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE"),
-		     "testString(std::string)");
+		     "testString(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>>)");
 	done();
     });
 
     it('receives std::string ref', (done) => {
 	assert.equal(itanium_abi.demangle(
 	    "_Z10testStringRNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE"),
-		     "testString(std::string&)");
+		     "testString(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>>&)");
 	done();
     });
 
     it('receives std::vector<int>', (done) => {
 	assert.equal(itanium_abi.demangle(
-	    "_Z10testVectorSt6vectorIiSaIiEE"), "testVector(std::vector<int>)");
+	    "_Z10testVectorSt6vectorIiSaIiEE"), "testVector(std::vector<int, std::allocator<int>>)");
 	done();
     });
 
