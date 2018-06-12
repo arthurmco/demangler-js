@@ -11,7 +11,18 @@ describe('Free Functions', () => {
 	assert.equal(itanium_abi.demangle("_Z7doThingv"), "doThing(void)");
 	done();
     });
+    
+    it('receives boolean', (done) => {
+	assert.equal(itanium_abi.demangle("_Z6isBoolb"), "isBool(bool)");
+	done();
+    });
 
+    it('receives short', (done) => {
+	assert.equal(itanium_abi.demangle("_Z7isShorts"), "isShort(short)");
+	done();
+    });
+
+    
     it('receives integer', (done) => {
 	assert.equal(itanium_abi.demangle("_Z5isInti"), "isInt(int)");
 	done();
@@ -181,10 +192,27 @@ describe('std types', () => {
 	done();
     });
 
+    
+    it('receives std::string rvalue', (done) => {
+	assert.equal(itanium_abi.demangle(
+	    "_Z18test_rvalue_stringONSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE"),
+		     "test_rvalue_string(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>&&)");
+	done();
+    });
+
+    
     it('receives std::vector<int>', (done) => {
 	assert.equal(itanium_abi.demangle(
 	    "_Z10testVectorSt6vectorIiSaIiEE"), "testVector(std::vector<int, std::allocator<int>>)");
 	done();
     });
+    
+    it('receives std::queue<float>', (done) => {
+	assert.equal(itanium_abi.demangle(
+	    "_Z10test_queueSt5queueIfSt5dequeIfSaIfEEE"),
+		     "test_queue(std::queue<float, std::deque<float, std::allocator<float>>>)");
+	done();
+    });
 
+    
 });
