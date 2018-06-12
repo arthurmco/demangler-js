@@ -1,5 +1,8 @@
 # demangler-js
 
+![Travis badge](https://travis-ci.org/arthurmco/demangler-js.svg?branch=master "Travis CI")
+![Coveralls badge](https://coveralls.io/repos/github/arthurmco/demangler-js/badge.svg?branch=master "Coveralls badge")
+
 A C++ name demangler written in pure Javascript code
 
 For now, it only demangles C++ functions generated from GCC and
