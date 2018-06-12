@@ -46,10 +46,8 @@ function popName(str) {
 	const res = /(\d*)/.exec(str);
 
 	const len = parseInt(res[0], 10);
-	console.log(len);
 
 	rlen += res[0].length + len;
-	console.log(res[0].length);
 	
 	const strstart = str.substr(res[0].length);
 	namestr = namestr.concat(strstart.substr(0, len));
@@ -61,7 +59,6 @@ function popName(str) {
     if (isEntity)
 	rlen += 2; // Take out the "E", the entity end mark
 
-    console.log(ostr.substr(rlen));
     return {name: namestr, str: ostr.substr(rlen)};
 }
 
@@ -90,6 +87,9 @@ module.exports = {
 	let functionname = fname.name;
 	let types = [];
 
+	let template_count = 0;
+	let template_types = [];
+
 	// Process the types
 	let str = fname.str;
 	
@@ -100,13 +100,14 @@ module.exports = {
 
 	       isBase -> is the type the built-in one in the mangler, represented with few letters?
 	       typeStr: the type name
+	       templateType: type info for the current template.
 
 	       The others are self descriptive
 	    */
 	    let typeInfo = {isBase: true, typeStr: "", isConst: false, isPtr: false,
 			    isRValueRef: false, isRef: false, isRestrict: false,
 			    templateStart: false, templateEnd: false,
-			    isVolatile: false, templateTypes: []};
+			    isVolatile: false, templateType: null};
 
 	    /* Check if we have a qualifier (like const, ptr, ref... )*/
 	    var doQualifier = true;
@@ -161,13 +162,24 @@ module.exports = {
 		
 	    case 'I':
 		// Template open bracket (<)
-		typeInfo.typeStr = "<";
-		typeInfo.templateStart = true;
+		types[types.length-1].templateStart = true;
+		template_types.push(types[types.length-1]);
+		template_count++;
+		
 		break;
 	    case 'E':
 		// Template closing bracket (>)
-		typeInfo.typeStr = ">";
+		if ((template_count <= 0)) {
+		    str = process.str;
+		    continue;
+		}
+		
 		typeInfo.templateEnd = true;
+
+		template_count--;
+		typeInfo.templateType = template_types[template_count];
+		template_types = template_types.slice(0, -1);
+		
 		break;
 				
 	    case 'j': typeInfo.typeStr = "unsigned int"; break;
@@ -207,13 +219,24 @@ module.exports = {
 	    if (t.isConst) typestr = typestr.concat("const ");
 	    if (t.isRestrict) typestr = typestr.concat("__restrict ");
 	    if (t.isVolatile) typestr = typestr.concat("volatile ");
-
+	    
 	    typestr = typestr.concat(t.typeStr);
-	    if (t.isRef) typestr = typestr.concat("&");
-	    if (t.isRValueRef) typestr = typestr.concat("&&");
 
-	    if (t.isPtr) typestr = typestr.concat("*");
+	    if (t.templateStart) typestr = typestr.concat("<");
+	    if (t.templateEnd) typestr = typestr.concat(">");
 
+	    if (!t.templateStart) {
+		if (t.isRef) typestr = typestr.concat("&");
+		if (t.isRValueRef) typestr = typestr.concat("&&");
+		if (t.isPtr) typestr = typestr.concat("*");
+	    }
+	    
+	    if (t.templateType) {		
+		if (t.templateType.isRef) typestr = typestr.concat("&");
+		if (t.templateType.isRValueRef) typestr = typestr.concat("&&");
+		if (t.templateType.isPtr) typestr = typestr.concat("*");
+	    }
+	    
 	    return typestr;
 	});
 
@@ -225,7 +248,7 @@ module.exports = {
 	*/
 	
 	return functionname.concat("(" + typelist.join(', ') + ")").replace(/<, /g, "<")
-	    .replace(/, >/g, ">").replace(/, </g, "<");
+	    .replace(/<, /g, "<").replace(/, >/g, ">").replace(/, </g, "<");
     }
 
 };
