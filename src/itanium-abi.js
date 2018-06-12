@@ -217,7 +217,6 @@ module.exports = {
 	const typelist = types.map((t) => {
 	    let typestr = "";
 	    if (t.isConst) typestr = typestr.concat("const ");
-	    if (t.isRestrict) typestr = typestr.concat("__restrict ");
 	    if (t.isVolatile) typestr = typestr.concat("volatile ");
 	    
 	    typestr = typestr.concat(t.typeStr);
@@ -229,6 +228,7 @@ module.exports = {
 		if (t.isRef) typestr = typestr.concat("&");
 		if (t.isRValueRef) typestr = typestr.concat("&&");
 		for (let i = 0; i < t.numPtr; i++) typestr = typestr.concat("*");
+		if (t.isRestrict) typestr = typestr.concat(" __restrict");
 	    }
 	    
 	    if (t.templateType) {		

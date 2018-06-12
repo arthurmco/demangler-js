@@ -104,6 +104,13 @@ describe('Free Functions', () => {
 	done();
     });
     
+    it('receives const restrict char ptrs', (done) => {
+	assert.equal(itanium_abi.demangle("_Z6strcpyPrKcPrc"),
+		     "strcpy(const char* __restrict, char* __restrict)");
+	done();
+    });
+
+    
     it('receives double char ptr', (done) => {
 	assert.equal(itanium_abi.demangle("_Z11testCharPtrPPc"), "testCharPtr(char**)");
 	done();
