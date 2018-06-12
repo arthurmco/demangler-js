@@ -17,26 +17,34 @@ function popName(str) {
     let isEntity = false;
 
     while (!isLast) {
-	
+
 	/* This is used for decoding names inside complex namespaces
 	   Whenever we find an 'N' preceding a number, it's a prefix/namespace
 	*/
 	isLast = str[0] != "N";
 
+	/* St means std:: in the mangled string */
+	if (str.substr(1, 2) === "St") {
+	    namestr = namestr.concat("std::");
+	    str = str.replace("St", "");
+	}
+
+
+
 	/* This is used for us to know we'll find an E in the end of this name
 	   The E marks the final of our name
 	*/
 	isEntity = isEntity || !isLast;
-	
+
 	if (!isLast)
 	    str = str.substr(1);
-	
+
 	const res = /(\d*)/.exec(str);
-	
+
 	const len = parseInt(res[0], 10);
 
 	rlen += res[0].length + len;
-	
+
 	const strstart = str.substr(res[0].length);
 	namestr = namestr.concat(strstart.substr(0, len));
 
@@ -129,16 +137,16 @@ module.exports = {
 	    case 'd': typeInfo.typeStr = "double"; break;
 	    case 'e': typeInfo.typeStr = "long double"; break;
 	    case 'g': typeInfo.typeStr = "__float128"; break;
-	    case 'z': typeInfo.typeStr = "..."; break;	    
+	    case 'z': typeInfo.typeStr = "..."; break;
 	    default: {
-		if (!isNaN(parseInt(process.ch, 10))) {
-		    
+		if (!isNaN(parseInt(process.ch, 10)) || process.ch == "N") {
+
 		    // It's a custom type name
 		    const tname = popName(process.ch.concat(process.str));
 		    typeInfo.typeStr = tname.name;
 		    process.str = tname.str;
 		}
-		
+
 	    } break;
 	    }
 
@@ -147,6 +155,7 @@ module.exports = {
 	    str = process.str;
 	}
 
+	/* Create the string representation of the type */
 	const typelist = types.map((t) => {
 	    let typestr = "";
 	    if (t.isConst) typestr = typestr.concat("const ");
@@ -156,7 +165,7 @@ module.exports = {
 	    typestr = typestr.concat(t.typeStr);
 	    if (t.isRef) typestr = typestr.concat("&");
 	    if (t.isRValueRef) typestr = typestr.concat("&&");
-	    
+
 	    if (t.isPtr) typestr = typestr.concat("*");
 
 	    return typestr;
