@@ -58,6 +58,11 @@ describe('Free Functions', () => {
 	done();
     });
 
+    it('receives volatile pointer to long int', (done) => {
+	assert.equal(itanium_abi.demangle("_Z9dangerousPVl"), "dangerous(volatile long int*)");
+	done();
+    });
+
 
     it('receives long long int', (done) => {
 	assert.equal(itanium_abi.demangle("_Z9test_longx"), "test_long(long long int)");

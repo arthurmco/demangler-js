@@ -28,6 +28,12 @@ Since neither the variable names or the result type are encoded in the
 mangled string, it is not known, and it will print only the types of
 the parameters.
 
+## Roadmap
+
+ - Support operators
+ - Support Visual C++
+ - Maybe support other languages, like Rust or Go.
+
 ## License
 
 MIT license.
