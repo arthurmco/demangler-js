@@ -4,7 +4,7 @@
   "description": "C++ name demangler written in javascript",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx mocha test/"
   },
   "keywords": [
     "demangler",
