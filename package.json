@@ -5,7 +5,8 @@
   "repository": "https://github.com/arthurmco/demangler-js",
   "main": "src/index.js",
   "scripts": {
-    "test": "npx mocha test/"
+      "test": "./.node_modules/mocha/bin/mocha test/",
+      "coveralls": "/.node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
   "keywords": [
     "demangler",
@@ -15,6 +16,9 @@
   "author": "Arthur Mendes",
   "license": "MIT",
   "devDependencies": {
-    "mocha": "^5.2.0"
+    "coveralls": "^3.0.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.2.0",
+    "mocha-lcov-reporter": "^1.3.0"
   }
 }

@@ -14,7 +14,7 @@ even need to be C++!
 
 const demangler = require('demangler-js');
 
-const fname = demangler.demangle("_Z23this_function_is_a_testi") 
+const fname = demangler.demangle("_Z23this_function_is_a_testi");
 console.log(fname);
 
 // prints 'this_function_is_a_test(int)'
